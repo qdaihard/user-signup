@@ -41,39 +41,42 @@ page_footer = """
 </html>
 """
 
+table = """
+<form action="/welcome">
+    <table>
+        <tr>
+            <td align="right">Username</td>
+            <td><input name="username"></td>
+        </tr>
+        <tr>
+            <td align="right">Password</td>
+            <td><input name="password"></td>
+        </tr>
+        <tr>
+            <td align="right">Verify Password</td>
+            <td><input name="passver"></td>
+        </tr>
+        <tr>
+            <td align="right">Email (optional)</td>
+            <td><input name="email"></td>
+        </tr>
+    </table>
+    <input type="submit">
+</form>
+
+"""
+
 class Index(webapp2.RequestHandler):
     def get(self):
-        page_content = ""
+        self.response.write(page_header + table + page_footer)
 
-        table = """
-        <form>
-            <table>
-                <tr>
-                    <td align="right">Username</td>
-                    <td><input></td>
-                </tr>
-                <tr>
-                    <td align="right">Password</td>
-                    <td><input></td>
-                </tr>
-                <tr>
-                    <td align="right">Verify Password</td>
-                    <td><input></td>
-                </tr>
-                <tr>
-                    <td align="right">Email (optional)</td>
-                    <td><input></td>
-                </tr>
-            </table>
-            <input type="submit">
-        </form>
-
-        """
-
-        page_content = table
-
-        self.response.write(page_header + page_content + page_footer)
+class WelcomeHandler(webapp2.RequestHandler):
+    def get(self):
+        username = self.request.get("username")
+        welcome_msg = "<h2>Welcome, {0}!</h2>".format(username)
+        self.response.write(welcome_msg)
 
 app = webapp2.WSGIApplication([
-    ('/', Index)
+    ('/', Index),
+    ('/welcome', WelcomeHandler)
 ], debug=True)
