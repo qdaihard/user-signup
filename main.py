@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 import webapp2
+import re
 
 # html boilerplate for the top of every page
 page_header = """
@@ -41,30 +42,47 @@ page_footer = """
 </html>
 """
 
+# submission form template
 table = """
 <form action="/welcome">
     <table>
         <tr>
             <td align="right">Username</td>
-            <td><input name="username"></td>
+            <td><input type="text" name="username" value="%(username)s"></td>
         </tr>
         <tr>
             <td align="right">Password</td>
-            <td><input name="password"></td>
+            <td><input type="password" name="password"></td>
         </tr>
         <tr>
             <td align="right">Verify Password</td>
-            <td><input name="passver"></td>
+            <td><input type="password" name="verpass"></td>
         </tr>
         <tr>
             <td align="right">Email (optional)</td>
-            <td><input name="email"></td>
+            <td><input type="text" name="email" value="%(email)s"></td>
         </tr>
     </table>
     <input type="submit">
 </form>
-
 """
+
+#validation methods for each entry
+USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+def valid_username(username):
+    return USER_RE.match(username)
+
+PASSWORD_RE = re.compile(r"^.{3,20}$")
+def valid_password(password):
+    return PASSWORD_RE.match(password)
+
+def valid_verpass(verpass):
+    if verpass==password:
+        return True
+
+EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
+def valid_email(email):
+    return EMAIL_RE.match(email)
 
 class Index(webapp2.RequestHandler):
     def get(self):
