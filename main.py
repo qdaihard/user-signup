@@ -44,11 +44,11 @@ page_footer = """
 
 # submission form template
 table = """
-<form action="/welcome">
+<form method="post">
     <table>
         <tr>
             <td align="right">Username</td>
-            <td><input type="text" name="username" value="%(username)s"></td>
+            <td><input type="text" name="username" value=""></td>
         </tr>
         <tr>
             <td align="right">Password</td>
@@ -60,7 +60,7 @@ table = """
         </tr>
         <tr>
             <td align="right">Email (optional)</td>
-            <td><input type="text" name="email" value="%(email)s"></td>
+            <td><input type="text" name="email" value=""></td>
         </tr>
     </table>
     <input type="submit">
@@ -80,7 +80,7 @@ def valid_verpass(verpass):
     if verpass==password:
         return True
 
-EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
+EMAIL_RE = re.compile(r"^[\S]+@[\S]+\.[\S]+$")
 def valid_email(email):
     return EMAIL_RE.match(email)
 
@@ -88,11 +88,21 @@ class Index(webapp2.RequestHandler):
     def get(self):
         self.response.write(page_header + table + page_footer)
 
+    def post(self):
+        username_correct = valid_username(self.request.get("username"))
+        if username_correct:
+            self.response.write(page_header + table + page_footer)
+        else:
+            self.redirect("/welcome")
+
+
 class WelcomeHandler(webapp2.RequestHandler):
     def get(self):
         username = self.request.get("username")
         welcome_msg = "<h2>Welcome, {0}!</h2>".format(username)
         self.response.write(welcome_msg)
+
+
 
 app = webapp2.WSGIApplication([
     ('/', Index),
