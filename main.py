@@ -44,11 +44,12 @@ page_footer = """
 
 # submission form template
 table = """
-<form method="post">
+<form method="post" action="/">
     <table>
         <tr>
             <td align="right">Username</td>
-            <td><input type="text" name="username" value=""></td>
+            <td><input type="text" name="username" value="%(username)s"><p>%(error)s</p></td>
+
         </tr>
         <tr>
             <td align="right">Password</td>
@@ -85,13 +86,17 @@ def valid_email(email):
     return EMAIL_RE.match(email)
 
 class Index(webapp2.RequestHandler):
-    def get(self):
+    def createForm(self, username, username_error="", password_error="", passwordVerify_error="", email, email_error=""):
         self.response.write(page_header + table + page_footer)
 
+    def get(self):
+        self.createForm()
+
     def post(self):
-        username_correct = valid_username(self.request.get("username"))
-        if username_correct:
-            self.response.write(page_header + table + page_footer)
+        username = self.request.get("username")
+        username_correct = valid_username(username)
+        if not username_correct:
+            self.response.write(page_header + table%{"username":username, "error":"something wrong"} + page_footer)
         else:
             self.redirect("/welcome")
 
